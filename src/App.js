@@ -4,6 +4,7 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import NavBar from './components/navbar';
 import Index from './pages';
 import FourOFour from './pages/FourOFour';
+import DrawingPage from './pages/drawing-page';
 ///////////////////////////////////////////////////////////////////////////////
 
 function App() {
@@ -16,6 +17,7 @@ function App() {
         <NavBar />
           <Routes>
             <Route path="/" element={<Index/>} />
+            <Route path="/draw" element={<DrawingPage/>} />
             <Route path="*" element={<FourOFour />} />
           </Routes>
       </Router>
