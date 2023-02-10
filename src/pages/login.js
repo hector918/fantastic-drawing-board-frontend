@@ -1,10 +1,15 @@
+import { useNavigate } from 'react-router-dom';
 import {srv} from '../fetch_';
+
 export default function Login() {
+  let navigator = useNavigate();
   function on_submit(evt) {
     evt.preventDefault();
 
     srv.login({name:evt.target.name.value}, (data)=>{
-      console.log(data);
+      if(data.name){
+        navigator("/draw");
+      }
     })
   }
   return (
@@ -13,7 +18,7 @@ export default function Login() {
         {/* <i className="icon icon-people"></i> */}
         <figure className="figure">
           <figcaption className="figure-caption text-center">Drawing board</figcaption>
-          <img style={{margin:"auto",borderTop: "#ccc 2px solid",borderLeft: "#ccc 2px solid",padding: "5px"}} className="img-responsive ..." src="./login-logo.png" alt="macOS Yosemite Wallpaper"/>
+          <img style={{margin:"auto",borderTop: "#ccc 2px solid",borderLeft: "#ccc 2px solid",padding: "5px"}} className="img-responsive ..." src="../login-logo.png" alt="macOS Yosemite Wallpaper"/>
         </figure>
       </div>
       <form onSubmit={on_submit}>

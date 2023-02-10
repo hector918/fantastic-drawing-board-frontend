@@ -34,7 +34,6 @@ function get_time_lapse_in_mi() {
   let d = new Date();
   return d.getTime();
 }
-
 //Utility/////////////////////////////////////////////////////////////
 //canvas/////////////////////////////////////////////////////////////
 class drawingBoard {
@@ -43,13 +42,16 @@ class drawingBoard {
   recent_moves = [];
   touchDevice = false;
   listen_event = { down : "mousedown", move : "mousemove", up : "mouseup" };
+  readOnly = false;
+  replay_speed = 0.5;
+  brush_color = "red";
   constructor(bg, db) {
     this.backgroundCanvas = bg;
     this.drawingCanvas = db;
     this.init_whiteboard();
     this.touchDevice = (navigator.maxTouchPoints || 'ontouchstart' in document.documentElement);
     console.log("is touch device", this.touchDevice);
-    this.switch_mode("mouse")
+    this.switch_mode("mouse");
   }
   //
   setBackgroundImg(blob) {
@@ -78,7 +80,6 @@ class drawingBoard {
     let start_time = new Date().getTime();
     ////////////////////////////////////////////////////////////////////
     const moveFn = (e) => {
-      console.log("event move");
       const x = e.pageX - this.layer_offset.left;
       const y = e.pageY - this.layer_offset.top;
       ctx.moveTo(preX, preY);
@@ -89,22 +90,22 @@ class drawingBoard {
       preY = y;
       brush_moves.push([x, y, get_time_lapse_in_mi() - start_time]);
     }
-    const throttleMoveFn = throttle(moveFn, 20);
+    const throttleMoveFn = throttle(moveFn, 30);
     const mdown = (e) => {
       console.log("event down");
+      if (this.readOnly) return;
       this.layer_offset = cumulativeOffset( this.drawingCanvas );
       brush_moves = [];
-      brush_moves.push([e.pageX, e.pageY, 0]);
-
       start_time = get_time_lapse_in_mi();
-      preX = e.pageX - this.layer_offset.left;;
-      preY = e.pageY - this.layer_offset.top;;
+      preX = e.pageX - this.layer_offset.left;
+      preY = e.pageY - this.layer_offset.top;
+      brush_moves.push([preX, preY, 0]);
       e.target.addEventListener(this.listen_event.move, throttleMoveFn);
     }
     const mup = (e) => {
       console.log("event up");
       e.target.removeEventListener(this.listen_event.move, throttleMoveFn);
-      this.recent_moves = [...brush_moves];
+      this.recent_moves.push({brush:"red",move:[...brush_moves]});
       console.log(this.recent_moves);
     }
     ////////////////////////////////////////////////////
@@ -130,32 +131,40 @@ class drawingBoard {
     context.beginPath();
   }
   //
-  re_draw() {
-    const ctx = this.drawingCanvas.getContext('2d');
+  re_draw(board = this.drawingCanvas, moves = this.recent_moves) {
+
+    const ctx = board.getContext('2d');
+    
     let acc_lapse = 0;
     let step_lapse = 0;
-
-    for (let [x, y, lapse] of this.recent_moves) {
-      x = x - this.layer_offset.left;
-      y = y - this.layer_offset.top;
-      if (lapse === 0) acc_lapse = step_lapse;
-      setTimeout(() => {
-        if (lapse === 0) {
-          ctx.moveTo(x, y);
-        }
-        else {
+    for(let { move } of moves) {
+      
+      for(let i = 1; i< move.length; i++){
+        let [x, y, lapse] = move[i];
+        let [pre_x, pre_y] = move[i-1];
+        
+        step_lapse = Math.max(Math.round((lapse * this.replay_speed) , i));
+        setTimeout(()=>{
+          ctx.moveTo(pre_x, pre_y);
           ctx.lineTo(x, y);
-          ctx.strokeStyle = "red";
+          ctx.strokeStyle = this.brush_color;
           ctx.stroke();
-          ctx.moveTo(x, y);
-        }
-        console.log(x, y, lapse);
-      }, lapse + acc_lapse);
-      step_lapse += lapse;
+        }, step_lapse + acc_lapse)
+      }
+      acc_lapse += step_lapse;
     }
   }
   get_moves() {
     return this.recent_moves;
+  }
+  get_canvas_size(){
+    return {
+      width : this.drawingCanvas.getAttribute("width"),
+      height : this.drawingCanvas.getAttribute("height")
+    }
+  }
+  clear_all_moves(){
+    this.recent_moves = [];
   }
   switch_mode(mode = "mouse") {
     if(mode !== "mouse"){
