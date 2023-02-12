@@ -5,7 +5,6 @@ const API = process.env.REACT_APP_API_URL;
 let default_fetch_options = { credentials: 'include' };
 let add_message;
 function error_handle(error) {
-  console.log("dasd",add_message)
   if (add_message) {
     add_message("read error", error.toString(), "error" );
   }
@@ -30,7 +29,6 @@ function login(name, cb)//get
       'Content-Type': 'application/json'
     }
   }
-
   fetch(`${API}/login`, options)
     .then(handleErrors)
     .then(response => response.json())
@@ -38,12 +36,29 @@ function login(name, cb)//get
     .catch(error_handle)
 }
 
-function uploadDrawing(name,description,moves,cb)//post
+function logout(cb)//delete
+{
+  let options = {
+    ...default_fetch_options,
+    method: 'DELETE',
+  }
+  fetch(`${API}/login`, options)
+    .then(handleErrors)
+    .then(response => response.json())
+    .then(data => { cb(data) })
+    .catch(error_handle)
+}
+/////////////////////////////////////
+function uploadDrawing(name,description,moves,board_size,cb)//post
 {
   let options = {
     ...default_fetch_options,
     method: 'POST',
-    body: JSON.stringify({name,description,moves}),
+    body: JSON.stringify({
+      name, description, 
+      moves:JSON.stringify(moves), 
+      board_size:JSON.stringify(board_size)
+    }),
     headers: {
       'Content-Type': 'application/json'
     }
@@ -53,10 +68,46 @@ function uploadDrawing(name,description,moves,cb)//post
     .then(data=>{cb(data)})
     .catch(error_handle);
 }
+function updateDrawing(id,name,description,moves,board_size,cb)//post
+{
+  let options = {
+    ...default_fetch_options,
+    method: 'PUT',
+    body: JSON.stringify({
+      name, description, 
+      moves:JSON.stringify(moves), 
+      board_size:JSON.stringify(board_size)
+    }),
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  }
+  fetch(`${API}/uploaddrawing/${id}`,options)
+    .then(response=>response.json())
+    .then(data=>{cb(data)})
+    .catch(error_handle);
+}
+function get_drawings_by_user(cb){
+  let options = {
+    ...default_fetch_options,
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  }
+  console.log(`${API}/drawings`)
+  fetch(`${API}/drawings`,options)
+    .then(response=>response.json())
+    .then(data=>{cb(data)})
+    .catch(error_handle);
+}
 
 export const srv = {
   login,
+  logout,
   setMsgEntry,
-  uploadDrawing
+  uploadDrawing,
+  updateDrawing,
+  get_drawings_by_user
 }
 

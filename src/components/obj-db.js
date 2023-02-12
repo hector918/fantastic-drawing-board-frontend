@@ -132,27 +132,10 @@ class drawingBoard {
   }
   //
   re_draw(board = this.drawingCanvas, moves = this.recent_moves) {
-
-    const ctx = board.getContext('2d');
-    
-    let acc_lapse = 0;
-    let step_lapse = 0;
-    for(let { move } of moves) {
-      
-      for(let i = 1; i< move.length; i++){
-        let [x, y, lapse] = move[i];
-        let [pre_x, pre_y] = move[i-1];
-        
-        step_lapse = Math.max(Math.round((lapse * this.replay_speed) , i));
-        setTimeout(()=>{
-          ctx.moveTo(pre_x, pre_y);
-          ctx.lineTo(x, y);
-          ctx.strokeStyle = this.brush_color;
-          ctx.stroke();
-        }, step_lapse + acc_lapse)
-      }
-      acc_lapse += step_lapse;
-    }
+    redraw_universal(board, moves, this.replay_speed);
+  }
+  set_moves(moves) {
+    this.recent_moves = [...moves];
   }
   get_moves() {
     return this.recent_moves;
@@ -179,4 +162,23 @@ class drawingBoard {
   }
 }
 /////////////////////////////////////////////////////////
-export { drawingBoard }
+function redraw_universal(board , moves, speed = 1){
+  const ctx = board.getContext('2d');
+    let acc_lapse = 0;
+    let step_lapse = 0;
+    for(let { move } of moves) {
+      for(let i = 1; i < move.length; i++){
+        let [x, y, lapse] = move[i];
+        let [pre_x, pre_y] = move[i-1];
+        step_lapse = Math.max(Math.round((lapse * speed) , i));
+        setTimeout(()=>{
+          ctx.moveTo(pre_x, pre_y);
+          ctx.lineTo(x, y);
+          ctx.strokeStyle = "red";
+          ctx.stroke();
+        }, step_lapse + acc_lapse)
+      }
+      acc_lapse += step_lapse;
+    }
+}
+export { drawingBoard, redraw_universal }

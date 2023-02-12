@@ -8,15 +8,26 @@ function throttle(fn, wait) {
     }
   };
 }
-
-
+function cumulativeOffset(element) {
+  let [top, left, height, width] = [0, 0, 0, 0];
+  do {
+    top += element.offsetTop || 0;
+    left += element.offsetLeft || 0;
+    height = element.offsetHeight || 0;
+    width = element.offsetWidth || 0;
+    element = element.offsetParent;
+  } while (element);
+  return { top, left, height, width };
+};
+/////////////////////////////////////////////////////////////////////////////
 export default class floatingPanel {
   parentDiv = undefined;
   isDown = false;
   offset = [0, 0];
   pinned = false;
-  constructor(base_div) {
+  constructor(base_div, pseudo_canvas=undefined) {
     this.parentDiv = base_div;
+    this.pseudo_canvas = pseudo_canvas;
     this.init();
   }
 
@@ -30,11 +41,17 @@ export default class floatingPanel {
         this.parentDiv.offsetTop - e.clientY
       ];
     }, true);
-
+    this.parentDiv.style = `transition: transform 0.5s ease; 
+                            position:absolute;
+                            cursor:grab;
+                            left:0px;
+                            top:0px;
+                            alignItems: center;
+                            `;
     this.parentDiv.addEventListener('mouseup', () => {
       this.isDown = false;
     }, true);
-
+    this.parentDiv.style.transform = `translateY(60px)`; 
     document.querySelector("body").addEventListener('mousemove', (event) => {
       event.preventDefault();
       if (this.isDown) {
@@ -46,15 +63,21 @@ export default class floatingPanel {
     let divs = this.parentDiv.querySelectorAll("div");
     let throttleMoveFn = throttle((evt) => {
       if(this.pinned) return;
-      if(Number(this.parentDiv.style.top.replace("px","")) > (window.innerHeight / 2)){
-        setTimeout(() => {
-          this.parentDiv.style.top = "50px";  
-        }, 50);
+      this.pinned = true;
+      let otop = this.parentDiv.getBoundingClientRect();
+      
+      if(otop > (window.innerHeight / 2)){
+        let rtop = cumulativeOffset(this.pseudo_canvas.drawingCanvas).top - 180;
+        this.parentDiv.style.transform = `translateY(${rtop}px)`;        
       }else{
-        setTimeout(()=>{
-          this.parentDiv.style.top = (window.innerHeight - this.parentDiv.offsetHeight - 10) + "px";
-        }, 50)
+        let rtop = cumulativeOffset(this.pseudo_canvas.drawingCanvas);
+        rtop = rtop.top + rtop.height;
+        console.log(rtop,otop)
+        this.parentDiv.style.transform = `translateY(${rtop - otop.top - 10}px)`;
       }
+      setTimeout(() => {
+        this.pinned = false;
+      }, 600);
     }, 1000);
     let function_panel_div = divs[2];
     function_panel_div.addEventListener("mousemove", throttleMoveFn);

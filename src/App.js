@@ -1,7 +1,7 @@
 import './App.css';
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { useState } from 'react';
-import {srv} from './fetch_';
+import { srv } from './fetch_';
 import { add_message } from './components/alert-dialog';
 //pages/////////////////////////////////////////////////////////////////////////
 import NavBar from './components/navbar';
@@ -9,10 +9,12 @@ import Index from './pages';
 import FourOFour from './pages/FourOFour';
 import DrawingPage from './pages/drawing-page';
 import Login from './pages/login';
+import Show from './pages/show';
 ///////////////////////////////////////////////////////////////////////////////
 
 function App() {
   const [ username, setUsername ] = useState(undefined);
+  const [drawings, setDrawings] = useState([]);
   srv.setMsgEntry (add_message);
 
   return (
@@ -22,16 +24,17 @@ function App() {
       <link rel="stylesheet" href="https://unpkg.com/spectre.css/dist/spectre-icons.min.css"></link>
       <Router>
         <Routes>
-          <Route path="/" element={<NavBar username={username} />} />
-          <Route path="/draw" element={<NavBar />} />
+          <Route path="/draw/*" element={<NavBar username={username} setUsername={setUsername} />} />
+          <Route path="/show" element={<NavBar username={username} setUsername={setUsername} />} />
           <Route path="/*" element={<></>} />
         </Routes>
         {/*  */}
         <Routes>
-          <Route path="/" element={<Index/>} />
+          <Route path="/" element={<Index username={username}/>} />
           <Route path="/login" element={<Login setUsername={setUsername} />} />
-          <Route path="/draw" element={<DrawingPage/>} />
-
+          <Route exact path="/draw" element={<DrawingPage/>} />
+          <Route path="/draw/:id" element={<DrawingPage drawings={drawings} setDrawings={setDrawings}/>} />
+          <Route path="/show" element={<Show drawings={drawings} setDrawings={setDrawings}/>} />
           <Route path="*" element={<FourOFour />} />
         </Routes>
         {/*  */}
