@@ -11,7 +11,14 @@ function error_handle(error) {
 }
 function handleErrors(response) {
   if (!response.ok) {
-      throw Error(response.statusText);
+    switch(response.status){
+      case 403:
+        window.location.assign("/");
+      break;
+      default:
+        
+    }
+    throw Error(response.statusText);
   }
   return response;
 }
@@ -64,10 +71,12 @@ function uploadDrawing(name,description,moves,board_size,cb)//post
     }
   }
   fetch(`${API}/uploaddrawing`,options)
+    .then(handleErrors)
     .then(response=>response.json())
     .then(data=>{cb(data)})
     .catch(error_handle);
 }
+///////////////////////////////////////////////////////////////////////
 function updateDrawing(id,name,description,moves,board_size,cb)//post
 {
   let options = {
@@ -83,10 +92,28 @@ function updateDrawing(id,name,description,moves,board_size,cb)//post
     }
   }
   fetch(`${API}/uploaddrawing/${id}`,options)
+    .then(handleErrors)
     .then(response=>response.json())
     .then(data=>{cb(data)})
     .catch(error_handle);
 }
+///////////////////////////////////////////////////////////////////////
+function deleteDrawing(id, cb)//delete
+{
+  let options = {
+    ...default_fetch_options,
+    method: 'DELETE',
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  }
+  fetch(`${API}/uploaddrawing/${id}`,options)
+    .then(handleErrors)
+    .then(response=>response.json())
+    .then(data=>{cb(data)})
+    .catch(error_handle);
+}
+///////////////////////////////////////////////////////////////////////
 function get_drawings_by_user(cb){
   let options = {
     ...default_fetch_options,
@@ -95,19 +122,36 @@ function get_drawings_by_user(cb){
       'Content-Type': 'application/json'
     }
   }
-  console.log(`${API}/drawings`)
   fetch(`${API}/drawings`,options)
+    .then(handleErrors)
     .then(response=>response.json())
     .then(data=>{cb(data)})
     .catch(error_handle);
 }
-
+///////////////////////////////////////////////////////////////////////
+function get_all_drawings(cb){
+  let options = {
+    ...default_fetch_options,
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  }
+  fetch(`${API}/all`,options)
+    .then(handleErrors)
+    .then(response=>response.json())
+    .then(data=>{cb(data)})
+    .catch(error_handle);
+}
+///////////////////////////////////////////////////////////////////////
 export const srv = {
   login,
   logout,
   setMsgEntry,
   uploadDrawing,
   updateDrawing,
-  get_drawings_by_user
+  deleteDrawing,
+  get_drawings_by_user,
+  get_all_drawings
 }
 

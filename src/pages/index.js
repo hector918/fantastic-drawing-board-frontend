@@ -1,13 +1,18 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import DrawingTile from "../components/drawing-tile";
+import { srv } from "../fetch_";
 
+
+///////////////////////////////////////////////////////////////
 export default function Index({username}) {
-
+  const [drawings, setDrawings] = useState([]);
   useEffect(()=>{
-
+    srv.get_all_drawings((data) =>{
+      if(Array.isArray(data)) setDrawings(data);
+    })
   },[])
   return (
-    
     <div className="container">
       <div className="hero bg-gray hero-sm">
         <div className="hero-body">
@@ -29,11 +34,10 @@ export default function Index({username}) {
           </div>
         </div>
       </div>
-      <div className="columns">
-        <div className="column col-6">col-6</div>
-        <div className="column col-3">col-3</div>
-        <div className="column col-2">col-2</div>
-        <div className="column col-1">col-1</div>
+      <div className="container-d" style={{marginTop:"20px"}}>
+        {drawings.map((el, idx)=>
+          <DrawingTile key={idx} drawing={el} idx={idx}/>
+        )}
       </div>
     </div>
   )

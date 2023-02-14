@@ -2,9 +2,9 @@ import { useEffect } from "react";
 import {redraw_universal} from "./obj-db";
 import './canvas-show.css';
 import { useNavigate } from "react-router-dom";
-
+import { srv } from "../fetch_";
 /////////////////////////////////////////////////////////////////////////////
-export default function CanvasShow({drawing, idx}) {
+export default function CanvasShow({drawing, idx, setDrawings}) {
   let {id, name, description, board_size, moves, timestamp} = drawing;
   const navigator = useNavigate();
  
@@ -19,7 +19,18 @@ export default function CanvasShow({drawing, idx}) {
     navigator(`/draw/${id}`);
   }
   function on_delete_button_click(){
-
+    if(window.confirm("confirm delete, yes?")){
+      srv.deleteDrawing(id, (data)=>{
+        if(data['id'] !== undefined){
+          setDrawings(pv => {
+            pv.splice(idx, 1);
+            return [...pv];
+          })
+        }
+      })
+    }else{
+      
+    }
   }
   ////////////////////////////////////////////////////////////////
   return (
@@ -32,7 +43,7 @@ export default function CanvasShow({drawing, idx}) {
         <div className="card-header">
           <div className=" float-right">
             <button className="btn btn-primary" onClick={on_edit_button_click}><i className="icon icon-edit"></i></button>
-            <button className="btn btn-error" style={{marginLeft:"5px"}} onClick={on_delete_button_click}><i className="icon icon-delete"></i></button>
+            <button className="btn btn-error" style={{marginLeft:"5px"}} onClick={on_delete_button_click} ><i className="icon icon-delete"></i></button>
           </div>
           
           <div className="card-title h5">{name}</div>

@@ -10,7 +10,7 @@ export default function Show({drawings, setDrawings}) {
   },[setDrawings])
   return (
     <div className="columns col-gapless" >
-      {drawings.map((el,idx)=><CanvasShow key={idx} drawing={el} idx={idx}/>)}
+      {drawings.map((el,idx)=><CanvasShow key={idx} drawing={el} idx={idx} setDrawings={setDrawings}/>)}
     </div>
   )
 }

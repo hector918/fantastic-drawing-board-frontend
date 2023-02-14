@@ -24,7 +24,7 @@ export default class floatingPanel {
   parentDiv = undefined;
   isDown = false;
   offset = [0, 0];
-  pinned = false;
+  pinned = true;
   constructor(base_div, pseudo_canvas=undefined) {
     this.parentDiv = base_div;
     this.pseudo_canvas = pseudo_canvas;
@@ -32,6 +32,8 @@ export default class floatingPanel {
   }
 
   init = () => {
+    this.parentDiv.style = `transition: transform 0.5s ease;position:absolute;cursor:grab;left:0px;top:0px;alignItems: center;`;
+
     this.parentDiv.addEventListener('mousedown', (e) => {
       if(this.pinned) return;
       this.isDown = true;
@@ -41,17 +43,13 @@ export default class floatingPanel {
         this.parentDiv.offsetTop - e.clientY
       ];
     }, true);
-    this.parentDiv.style = `transition: transform 0.5s ease; 
-                            position:absolute;
-                            cursor:grab;
-                            left:0px;
-                            top:0px;
-                            alignItems: center;
-                            `;
     this.parentDiv.addEventListener('mouseup', () => {
       this.isDown = false;
     }, true);
+    /////
     this.parentDiv.style.transform = `translateY(60px)`; 
+    setTimeout(()=>{this.pinned = false},500);
+    ///
     document.querySelector("body").addEventListener('mousemove', (event) => {
       event.preventDefault();
       if (this.isDown) {

@@ -20,7 +20,7 @@ export default function DrawingBoard({id, drawings, setDrawings}) {
   },[])
 
   useEffect(()=>{
-    if(id===undefined || drawings.length < 1) return;
+    if(id === undefined || drawings.length < 1) return;
     let drawing = drawings.find(el=>el.id.toString()===id.toString());
     console.log(drawings,drawing);
     setTitle(drawing.name);
@@ -41,19 +41,17 @@ export default function DrawingBoard({id, drawings, setDrawings}) {
   function on_close_modal(){
     let modal = document.querySelector("#drawingboard-save-confirm-modal");
     modal.classList.remove("active");
-
   }
   function on_save_modal(){
     if(!fp) return;
     let modal = document.querySelector("#drawingboard-save-confirm-modal");
     // let button = evt.currentTarget;
-
     let warning = [];
     if(title === ""){ warning.push("name is required.") }
     if(warning.length>0){
       alert(warning.join(","));
     }else{
-      if(id!==undefined){
+      if(id===undefined){
         srv.uploadDrawing(
           title, 
           description, 
@@ -82,12 +80,12 @@ export default function DrawingBoard({id, drawings, setDrawings}) {
         <canvas id="layer1" style={{position:"absolute",left:"0",top:"0",zIndex:"0",width:"100%",height:"100%"}}></canvas>
         <canvas id="layer2" style={{position:"absolute",left:"0",top:"0",zIndex:"0",width:"100%",height:"100%"}}></canvas>
       </div>
-      <div id="floatingpanel" className="columns">
+      <div id="floatingpanel" className="columns" >
         <div id="floating_pin_panel">
           <span className="s-circle column bg-secondary c-hand" style={{fontSize:"2em",filter:"grayscale(5)",width:"50px",height:"50px"}}>📌</span>
         </div>
         <div className="divider-vert column" data-content="|"></div>
-        <div id="floating_function_panel">
+        <div id="floating_function_panel" style={{margin:"auto"}}>
           <div className="btn-group btn-group-block">
             <button className="btn">clear canvas</button>
             <button className="btn">redraw</button>

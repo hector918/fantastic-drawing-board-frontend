@@ -51,3 +51,12 @@ body{
   margin: 2%;
   height: 96%;
 }
+
+#alert_dialog{
+  transition: opacity 0.6s;
+  opacity: 0.618;
+}
+
+#alert_dialog:hover{
+  opacity: 1;
+}

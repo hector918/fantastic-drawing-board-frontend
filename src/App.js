@@ -39,7 +39,7 @@ function App() {
         </Routes>
         {/*  */}
         <Routes>
-          <Route path="*" element={<div id='alert_dialog' style={{position:"absolute",width:"100%",bottom:"0px"}}>
+          <Route path="*" element={<div id='alert_dialog' style={{position:"sticky",width:"100%",bottom:"0px"}}>
           </div>}/>
         </Routes>
       </Router>

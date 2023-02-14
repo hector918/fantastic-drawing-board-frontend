@@ -1,0 +1,31 @@
+.container-d {
+  column-count: 3;
+  column-gap: 20px;
+
+  counter-reset: count;
+  width: 1024px;
+  margin: 0 auto;
+}
+
+.tile-d {
+
+  background-color: #eee;
+  border-radius: 8px;
+  position: relative;
+  margin-bottom: 20px;
+  transition: opacity 0.5s ease-in-out;
+  opacity: 0;
+}
+
+.tile-d.loaded {
+  opacity: 1;
+}
+
+.tile-d canvas {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  position: absolute;
+  top: 0;
+  left: 0;
+}

@@ -1,21 +1,11 @@
 //Utility/////////////////////////////////////////////////////////////
 function throttle(fn, wait) {
-  let inThrottle, lastFn, lastTime;
-  return function () {
-    const context = this,
-      args = arguments;
-    if (!inThrottle) {
-      fn.apply(context, args);
-      lastTime = Date.now();
-      inThrottle = true;
-    } else {
-      clearTimeout(lastFn);
-      lastFn = setTimeout(() => {
-        if (Date.now() - lastTime >= wait) {
-          fn.apply(context, args);
-          lastTime = Date.now();
-        }
-      }, Math.max(wait - (Date.now() - lastTime), 0));
+  let lastCall = Date.now() - wait;
+  return function() {
+    let now = Date.now();
+    if (now - lastCall >= wait) {
+      lastCall = now;
+      fn.apply(this, arguments);
     }
   };
 }
@@ -80,8 +70,8 @@ class drawingBoard {
     let start_time = new Date().getTime();
     ////////////////////////////////////////////////////////////////////
     const moveFn = (e) => {
-      const x = e.pageX - this.layer_offset.left;
-      const y = e.pageY - this.layer_offset.top;
+      const x = e.pageX - this.layer_offset.left ;
+      const y = e.pageY - this.layer_offset.top ;
       ctx.moveTo(preX, preY);
       ctx.lineTo(x, y);
       ctx.strokeStyle = "red";
@@ -92,7 +82,7 @@ class drawingBoard {
     }
     const throttleMoveFn = throttle(moveFn, 30);
     const mdown = (e) => {
-      console.log("event down");
+      // console.log("event down");
       if (this.readOnly) return;
       this.layer_offset = cumulativeOffset( this.drawingCanvas );
       brush_moves = [];
@@ -103,7 +93,7 @@ class drawingBoard {
       e.target.addEventListener(this.listen_event.move, throttleMoveFn);
     }
     const mup = (e) => {
-      console.log("event up");
+      // console.log("event up");
       e.target.removeEventListener(this.listen_event.move, throttleMoveFn);
       this.recent_moves.push({brush:"red",move:[...brush_moves]});
       console.log(this.recent_moves);
@@ -111,18 +101,21 @@ class drawingBoard {
     ////////////////////////////////////////////////////
     this.drawingCanvas.addEventListener(this.listen_event.down, mdown);
     this.drawingCanvas.addEventListener(this.listen_event.up, mup);
-    window.addEventListener("resize", throttle((evt) => {
-      this.resize_drawing_board();
-    }, 500));
+    window.addEventListener("resize", this.resize_drawing_board.bind(this));
     this.resize_drawing_board();
   }
   //
   resize_drawing_board() {
-    let {height, width} = cumulativeOffset(this.backgroundCanvas);
+    let height = this.backgroundCanvas.parentElement.offsetHeight;
+    let width = this.backgroundCanvas.parentElement.offsetWidth;
     this.backgroundCanvas.setAttribute("height", `${height}`);
     this.backgroundCanvas.setAttribute("width", `${width}`);
     this.drawingCanvas.setAttribute("height", `${height}`);
     this.drawingCanvas.setAttribute("width", `${width}`);
+    this.backgroundCanvas.style.height =`${height}px`;
+    this.backgroundCanvas.style.width = `${width}px`;
+    this.drawingCanvas.style.height =`${height}px`;
+    this.drawingCanvas.style.width = `${width}px`;
   }
   //
   clear_drawing() {
@@ -164,21 +157,21 @@ class drawingBoard {
 /////////////////////////////////////////////////////////
 function redraw_universal(board , moves, speed = 1){
   const ctx = board.getContext('2d');
-    let acc_lapse = 0;
-    let step_lapse = 0;
-    for(let { move } of moves) {
-      for(let i = 1; i < move.length; i++){
-        let [x, y, lapse] = move[i];
-        let [pre_x, pre_y] = move[i-1];
-        step_lapse = Math.max(Math.round((lapse * speed) , i));
-        setTimeout(()=>{
-          ctx.moveTo(pre_x, pre_y);
-          ctx.lineTo(x, y);
-          ctx.strokeStyle = "red";
-          ctx.stroke();
-        }, step_lapse + acc_lapse)
-      }
-      acc_lapse += step_lapse;
+  let acc_lapse = 0;
+  let step_lapse = 0;
+  for(let { move } of moves) {
+    for(let i = 1; i < move.length; i++){
+      let [x, y, lapse] = move[i];
+      let [pre_x, pre_y] = move[i-1];
+      step_lapse = Math.max(Math.round((lapse * speed) , i));
+      setTimeout(()=>{
+        ctx.moveTo(pre_x, pre_y);
+        ctx.lineTo(x, y);
+        ctx.strokeStyle = "red";
+        ctx.stroke();
+      }, step_lapse + acc_lapse)
     }
+    acc_lapse += step_lapse;
+  }
 }
 export { drawingBoard, redraw_universal }
