@@ -8,14 +8,14 @@ export default function DrawingTile({drawing, idx}) {
 
 
 	useEffect(()=>{
-		console.log(idx*500)
+
 		setTimeout(()=>{
 			redraw_universal(document.querySelector(`#drawing-tile-id-${id}`),JSON.parse(moves));
-		},500*idx);
+		},500 * idx);
 		setTimeout(()=>{
 			
 			document.querySelector(`#drawing-tile-id-${id}`).parentElement.classList.add("loaded")
-		},500*idx-100);
+		},500 * idx - 100);
 
 	},[id, moves, idx])
 	return (

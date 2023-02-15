@@ -2,11 +2,13 @@ import { useEffect, useState } from "react";
 import {drawingBoard} from "./obj-db";
 import floatingPanel from './floatingpanel';
 import {srv} from '../fetch_';
+import { useNavigate } from "react-router-dom";
 let db;
 let fp;
 export default function DrawingBoard({id, drawings, setDrawings}) {
   let [title, setTitle] = useState([]);
   let [description, setDescription] = useState([]);
+  let navigator = useNavigate();
   ////////////////////////////////////////////////
   useEffect(()=>{
     db = new drawingBoard(document.querySelector("#layer1"), document.querySelector("#layer2"));
@@ -22,7 +24,6 @@ export default function DrawingBoard({id, drawings, setDrawings}) {
   useEffect(()=>{
     if(id === undefined || drawings.length < 1) return;
     let drawing = drawings.find(el=>el.id.toString()===id.toString());
-    console.log(drawings,drawing);
     setTitle(drawing.name);
     setDescription(drawing.description);
     db.set_moves(JSON.parse(drawing.moves));
@@ -69,6 +70,7 @@ export default function DrawingBoard({id, drawings, setDrawings}) {
           (response)=>{ if(response.id){ modal.classList.remove("active") }
         })
       }
+      navigator('/show');
     }
   }
   function on_title_change(evt){ setTitle(evt.target.value) }
@@ -82,7 +84,7 @@ export default function DrawingBoard({id, drawings, setDrawings}) {
       </div>
       <div id="floatingpanel" className="columns" >
         <div id="floating_pin_panel">
-          <span className="s-circle column bg-secondary c-hand" style={{fontSize:"2em",filter:"grayscale(5)",width:"50px",height:"50px"}}>📌</span>
+          <span className="s-circle column bg-secondary c-hand" style={{fontSize:"2em",filter:"grayscale(5)",width:"50px",height:"50px",padding:"0px"}}>📌</span>
         </div>
         <div className="divider-vert column" data-content="|"></div>
         <div id="floating_function_panel" style={{margin:"auto"}}>
