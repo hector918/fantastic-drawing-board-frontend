@@ -22,7 +22,11 @@ export default function Index({username}) {
             </div>
             <div className="divider-vert " data-content="|"></div>
             <div className="column">
-              <p className="text-left">A flat and smooth surface, where lines come to life, With a straight edge, lines stay true, And a secret rule, angled lines to ensue.</p>
+              <p className="text-left">I am a canvas, yet not for paint,
+An empty space, yet not for faint.<br></br>What am I, you may ask, this enigma of creation?
+A riddle that challenges the mind's exploration.
+I am a drawing board, a realm of possibility,
+A space where art and creativity find their ability.</p>
               <p className="text-right">
                 {username===undefined?
                   <Link to="/login">Login...</Link>

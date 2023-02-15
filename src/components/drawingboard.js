@@ -23,7 +23,7 @@ export default function DrawingBoard({id, drawings, setDrawings}) {
 
   useEffect(()=>{
     if(id === undefined || drawings.length < 1) return;
-    let drawing = drawings.find(el=>el.id.toString()===id.toString());
+    let drawing = drawings.find(el => el.id.toString() === id.toString());
     setTitle(drawing.name);
     setDescription(drawing.description);
     db.set_moves(JSON.parse(drawing.moves));

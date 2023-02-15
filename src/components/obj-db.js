@@ -96,7 +96,7 @@ class drawingBoard {
       // console.log("event up");
       e.target.removeEventListener(this.listen_event.move, throttleMoveFn);
       this.recent_moves.push({brush:"red",move:[...brush_moves]});
-      console.log(this.recent_moves);
+      // console.log(this.recent_moves);
     }
     ////////////////////////////////////////////////////
     this.drawingCanvas.addEventListener(this.listen_event.down, mdown);
