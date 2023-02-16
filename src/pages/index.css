@@ -1,0 +1,8 @@
+.red_span{
+    color: red;
+    transition: color 4s;
+}
+
+.fade{
+    color : darkgray;
+}
