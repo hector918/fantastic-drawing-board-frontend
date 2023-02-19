@@ -1,7 +1,9 @@
-const API = process.env.REACT_APP_API_URL;
+// const API = process.env.REACT_APP_API_URL;
 // let setMsgEntry = (func)=>{
 //   add_message = func;
 // }
+
+const API = `${window.location.origin}/draw`;
 let default_fetch_options = { credentials: 'include' };
 let add_message;
 function error_handle(error) {
