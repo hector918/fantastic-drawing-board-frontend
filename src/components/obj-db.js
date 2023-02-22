@@ -70,6 +70,7 @@ class drawingBoard {
     let start_time = new Date().getTime();
     ////////////////////////////////////////////////////////////////////
     const moveFn = (e) => {
+      if(e.buttons !== 1) return ;
       const x = e.pageX - this.layer_offset.left ;
       const y = e.pageY - this.layer_offset.top ;
       ctx.moveTo(preX, preY);

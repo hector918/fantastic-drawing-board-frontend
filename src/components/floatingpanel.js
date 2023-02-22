@@ -33,17 +33,16 @@ export default class floatingPanel {
 
   init = () => {
     this.parentDiv.style = `transition: transform 0.5s ease;position:absolute;cursor:grab;left:0px;top:0px;alignItems: center;`;
-
-    this.parentDiv.addEventListener('mousedown', (e) => {
+    let move_handler_div = this.parentDiv.querySelector("div");
+    move_handler_div.addEventListener('mousedown', (e) => {
       if(this.pinned) return;
       this.isDown = true;
-      console.log("panel down")
       this.offset = [
         this.parentDiv.offsetLeft - e.clientX,
         this.parentDiv.offsetTop - e.clientY
       ];
     }, true);
-    this.parentDiv.addEventListener('mouseup', () => {
+    move_handler_div.addEventListener('mouseup', () => {
       this.isDown = false;
     }, true);
     /////
@@ -52,7 +51,7 @@ export default class floatingPanel {
     ///
     document.querySelector("body").addEventListener('mousemove', (event) => {
       event.preventDefault();
-      if (this.isDown) {
+      if (this.isDown && (event.buttons === 1)) {
         this.parentDiv.style.left = (event.clientX + this.offset[0]) + 'px';
         this.parentDiv.style.top = (event.clientY + this.offset[1]) + 'px';
       }
@@ -60,7 +59,7 @@ export default class floatingPanel {
     //
     let divs = this.parentDiv.querySelectorAll("div");
     let throttleMoveFn = throttle((evt) => {
-      if(this.pinned) return;
+      if(this.pinned || this.isDown) return;
       this.pinned = true;
       let otop = this.parentDiv.getBoundingClientRect();
       
@@ -70,7 +69,6 @@ export default class floatingPanel {
       }else{
         let rtop = cumulativeOffset(this.pseudo_canvas.drawingCanvas);
         rtop = rtop.top + rtop.height;
-        console.log(rtop,otop)
         this.parentDiv.style.transform = `translateY(${rtop - otop.top - 10}px)`;
       }
       setTimeout(() => {

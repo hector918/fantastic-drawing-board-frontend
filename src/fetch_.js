@@ -3,7 +3,8 @@
 //   add_message = func;
 // }
 
-const API = `${window.location.origin}/draw`;
+// const API = `${window.location.origin}/draw`;
+const API = `http://127.0.0.1:3333/draw`;
 let default_fetch_options = { credentials: 'include' };
 let add_message;
 function error_handle(error) {
@@ -15,7 +16,7 @@ function handleErrors(response) {
   if (!response.ok) {
     switch(response.status){
       case 403:
-        window.location.assign("/");
+        // window.location.assign("/");
       break;
       default:
         
